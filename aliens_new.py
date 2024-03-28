@@ -251,7 +251,7 @@ def main(winstyle=0):
     Player.images = [img, pg.transform.flip(img, 1, 0)]
     img = load_image("explosion1.gif")
     Explosion.images = [img, pg.transform.flip(img, 1, 1)]
-    Alien.images = [load_image(im) for im in ("alien1.gif", "alien2.gif", "alien3.gif")]
+    Alien.images = [load_image(im) for im in ("ali1.gif", "ali2.gif", "ali3.gif")]
     Bomb.images = [load_image("bomb.gif")]
     Shot.images = [load_image("shot.gif")]
 
