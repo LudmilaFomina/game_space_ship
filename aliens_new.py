@@ -248,8 +248,8 @@ def main(winstyle=0):
     # Load images, assign to sprite classes
     # (do this before the classes are used, after screen setup)
     img = load_image('spaceship.gif')
-    Player.images = [img, pg.transform.flip(img, 1, 0)]
-    img = load_image("explosion1.gif")
+    Player.images = [img, pg.transform.flip(img, 0, 1)]
+    img = load_image("explo.gif")
     Explosion.images = [img, pg.transform.flip(img, 1, 1)]
     Alien.images = [load_image(im) for im in ("ali1.gif", "ali2.gif", "ali3.gif")]
     Bomb.images = [load_image("bomb.gif")]
