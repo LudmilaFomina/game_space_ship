@@ -36,8 +36,8 @@ if not pg.image.get_extended():
 
 
 # game constants
-MAX_SHOTS = 8  # most player bullets onscreen
-ALIEN_ODDS = 22  # chances a new alien appears
+MAX_SHOTS = 10  # most player bullets onscreen
+ALIEN_ODDS = 15  # chances a new alien appears
 BOMB_ODDS = 60  # chances a new bomb will drop
 ALIEN_RELOAD = 12  # frames between new aliens
 SCREENRECT = pg.Rect(0, 0, 960, 640)
@@ -110,7 +110,7 @@ class Player(pg.sprite.Sprite):
 
 
 class Alien(pg.sprite.Sprite):
-    """An alien space ship. That slowly moves down the screen."""
+    """An alien spaceship. That slowly moves down the screen."""
 
     speed = 13
     animcycle = 12
@@ -151,7 +151,7 @@ class Explosion(pg.sprite.Sprite):
     def update(self):
         """called every time around the game loop.
 
-        Show the explosion surface for 'defaultlife'.
+        Show the explosion surface for 'default life'.
         Every game tick(update), we decrease the 'life'.
 
         Also we animate the explosion.
@@ -205,7 +205,7 @@ class Bomb(pg.sprite.Sprite):
         - remove the Bomb.
         """
         self.rect.move_ip(0, self.speed)
-        if self.rect.bottom >= 470:
+        if self.rect.bottom >= 570:             #линия взрыва бомб
             Explosion(self, self.explosion_group)
             self.kill()
 
@@ -215,12 +215,12 @@ class Score(pg.sprite.Sprite):
 
     def __init__(self, *groups):
         pg.sprite.Sprite.__init__(self, *groups)
-        self.font = pg.font.Font(None, 20)
+        self.font = pg.font.Font(None, 30)
         self.font.set_italic(1)
         self.color = "white"
         self.lastscore = -1
         self.update()
-        self.rect = self.image.get_rect().move(10, 450)
+        self.rect = self.image.get_rect().move(10, 440)
 
     def update(self):
         """We only update the score in update() when it has changed."""
@@ -248,9 +248,9 @@ def main(winstyle=0):
     # Load images, assign to sprite classes
     # (do this before the classes are used, after screen setup)
     img = load_image('spaceship.gif')
-    Player.images = [img, pg.transform.flip(img, 0, 1)]
+    Player.images = [img, pg.transform.flip(img, 1, 0)]
     img = load_image("explo.gif")
-    Explosion.images = [img, pg.transform.flip(img, 1, 1)]
+    Explosion.images = [img, pg.transform.flip(img, 1, 0)]
     Alien.images = [load_image(im) for im in ("ali1.gif", "ali2.gif", "ali3.gif")]
     Bomb.images = [load_image("bomb.gif")]
     Shot.images = [load_image("shot.gif")]
