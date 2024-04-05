@@ -37,9 +37,10 @@ if not pg.image.get_extended():
 
 # game constants
 MAX_SHOTS = 10  # most player bullets onscreen
-ALIEN_ODDS = 15  # chances a new alien appears
+ALIEN_ODDS = 5  # chances a new alien appears
 BOMB_ODDS = 60  # chances a new bomb will drop
-ALIEN_RELOAD = 12  # frames between new aliens
+ALIEN_RELOAD = 30  # frames between new aliens
+ROCKET_EXPLOSIAN_FACTOR = 10        #ya
 SCREENRECT = pg.Rect(0, 0, 960, 640)
 SCORE = 0
 
@@ -89,7 +90,8 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, *groups)
         self.image = self.images[0]
         self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
-        self.reloading = 0
+        self.reloading = False
+        self.reloading_rocket = False
         self.origtop = self.rect.top
         self.facing = -1
 
@@ -183,10 +185,30 @@ class Shot(pg.sprite.Sprite):
             self.kill()
 
 
+class Rocket(pg.sprite.Sprite):                        # я сделала
+    """a rocket the Player sprite fires."""
+
+    speed = -11
+    images: List[pg.Surface] = []
+
+    def __init__(self, pos, *groups):
+        pg.sprite.Sprite.__init__(self, *groups)
+        self.image = self.images[0]
+        self.rect = self.image.get_rect(midbottom=pos)
+
+    def update(self):
+        """called every time around the game loop.
+        Every tick we move the shot upwards.
+        """
+        self.rect.move_ip(0, self.speed)
+        if self.rect.top <= 0:
+            self.kill()
+
+
 class Bomb(pg.sprite.Sprite):
     """A bomb the aliens drop."""
 
-    speed = 9
+    speed = 4
     images: List[pg.Surface] = []
 
     def __init__(self, alien, explosion_group, *groups):
@@ -230,6 +252,32 @@ class Score(pg.sprite.Sprite):
             self.image = self.font.render(msg, 0, self.color)
 
 
+def rocket_explode(aliens, rockets, boom_sound, all, background):
+    print('len rockets = ', len(rockets))
+    for rocket in rockets:
+        print('do = ', rocket.rect)
+        rocket.rect.scale_by_ip(ROCKET_EXPLOSIAN_FACTOR)
+        print('posle = ', rocket.rect)
+        #rocket.rect.width = rocket.rect.width * ROCKET_EXPLOSIAN_FACTOR
+        #rocket.rect.height = rocket.rect.height * ROCKET_EXPLOSIAN_FACTOR
+        # kusok dla otladki
+        pg.draw.rect(background, (100, 0, 0), rocket.rect)
+
+
+    for alien in pg.sprite.groupcollide(aliens, rockets, 1, 0):
+        if pg.mixer and boom_sound is not None:
+            boom_sound.play()
+        Explosion(alien, all)
+        global SCORE
+        SCORE = SCORE + 1
+    for rocket in rockets:
+        rocket.rect.scale_by_ip(1/ROCKET_EXPLOSIAN_FACTOR)
+        #rocket.rect.width = rocket.rect.width / ROCKET_EXPLOSIAN_FACTOR
+        #rocket.rect.height = rocket.rect.height / ROCKET_EXPLOSIAN_FACTOR
+        Explosion(rocket, all)
+        rocket.kill()
+
+
 def main(winstyle=0):
     # Initialize pygame
     if pg.get_sdl_version()[0] == 2:
@@ -254,6 +302,7 @@ def main(winstyle=0):
     Alien.images = [load_image(im) for im in ("ali1.gif", "ali2.gif", "ali3.gif")]
     Bomb.images = [load_image("bomb.gif")]
     Shot.images = [load_image("shot.gif")]
+    Rocket.images = [load_image("old_explosion1.gif")]              # ya sdelala
 
     # decorate the game window
     icon = pg.transform.scale(Alien.images[0], (32, 32))
@@ -280,6 +329,7 @@ def main(winstyle=0):
     # Initialize Game Groups
     aliens = pg.sprite.Group()
     shots = pg.sprite.Group()
+    rockets = pg.sprite.Group()              #ya sdelala
     bombs = pg.sprite.Group()
     all = pg.sprite.RenderUpdates()
     lastalien = pg.sprite.GroupSingle()
@@ -342,6 +392,17 @@ def main(winstyle=0):
                 shoot_sound.play()
         player.reloading = firing
 
+        rocketing = keystate[pg.K_n]                                     #ya sdelala
+        if not player.reloading_rocket and rocketing:
+            Rocket(player.gunpos(), rockets, all)
+            if pg.mixer and shoot_sound is not None:
+                shoot_sound.play()
+        player.reloading_rocket = rocketing
+
+        rocket_exploding = keystate[pg.K_m]
+        if rocket_exploding:
+            rocket_explode(aliens, rockets, boom_sound, all, background)
+
         # Create new alien
         if alienreload:
             alienreload = alienreload - 1
@@ -364,6 +425,14 @@ def main(winstyle=0):
 
         # See if shots hit the aliens.
         for alien in pg.sprite.groupcollide(aliens, shots, 1, 1).keys():
+            if pg.mixer and boom_sound is not None:
+                boom_sound.play()
+            Explosion(alien, all)
+            SCORE = SCORE + 1
+
+        # See if rockets hit the aliens.                    #ya sdelala
+        for alien in pg.sprite.groupcollide(aliens, rockets, 1, 0):
+            print(alien)
             if pg.mixer and boom_sound is not None:
                 boom_sound.play()
             Explosion(alien, all)
