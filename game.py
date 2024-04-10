@@ -288,7 +288,7 @@ class Game:
         for bomb in pg.sprite.spritecollide(self.player, self.bombs, 1):
             self._play_boom_sound()
             self._explode(self.player)
-            self._explode(self.bomb)
+            self._explode(self.bombs)
             self.player.kill()
 
     def _play_boom_sound(self):
