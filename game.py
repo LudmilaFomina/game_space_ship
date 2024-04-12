@@ -126,7 +126,7 @@ class Game:
         Alien.images = [load_image(im) for im in ("ali1.gif", "ali2.gif", "ali3.gif")]
         Bomb.images = [load_image("bomb.gif")]
         Shot.images = [load_image("shot.gif")]
-        Rocket.images = [load_image("old_explosion1.gif")]              # ya sdelala
+        Rocket.images = [load_image("rocket.gif")]
 
         # decorate the game window
         icon = pg.transform.scale(Alien.images[0], (32, 32))
@@ -216,7 +216,7 @@ class Game:
 
     def _input_fire_rocket(self, keystate):
         rocketing = keystate[pg.K_n]
-        if not self.player.reloading_rocket and rocketing:
+        if not self.player.reloading_rocket and rocketing and self.rocket == None:
             self.rocket = Rocket(self.player.gunpos(), self._all)
             self._play_shoot_sound()
         self.player.reloading_rocket = rocketing
