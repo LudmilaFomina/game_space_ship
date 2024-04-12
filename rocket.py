@@ -6,10 +6,8 @@ from explosion import Explosion
 from game_settings import SCORE
 
 
-
-class Rocket(pg.sprite.Sprite):                        # я сделала
+class Rocket(pg.sprite.Sprite):
     """a rocket the Player sprite fires."""
-
     speed = -11
     images: List[pg.Surface] = []
 

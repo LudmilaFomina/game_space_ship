@@ -4,7 +4,6 @@ from typing import List
 
 class Shot(pg.sprite.Sprite):
     """a bullet the Player sprite fires."""
-
     speed = -11
     images: List[pg.Surface] = []
 
@@ -15,7 +14,6 @@ class Shot(pg.sprite.Sprite):
 
     def update(self):
         """called every time around the game loop.
-
         Every tick we move the shot upwards.
         """
         self.rect.move_ip(0, self.speed)
