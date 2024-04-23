@@ -17,7 +17,7 @@ class Score(pg.sprite.Sprite):
 
     def update(self):
         """We only update the score in update() when it has changed."""
-        if SCORE != self.lastscore:
-            self.lastscore = SCORE
-            msg = f"Score: {SCORE}"
+        if SCORE.value != self.lastscore:
+            self.lastscore = SCORE.value
+            msg = f"Score: {SCORE.value}"
             self.image = self.font.render(msg, 0, self.color)

@@ -232,8 +232,7 @@ class Game:
         for alien in pg.sprite.spritecollide(
                 blast, self.aliens, 1):
             self._explode(alien)
-            global SCORE
-            SCORE += 1
+            SCORE.value += 1
         self._explode(blast)
         self.rocket.kill()
         blast.kill()
@@ -257,8 +256,7 @@ class Game:
             self._play_boom_sound()
             self._explode(alien)
             self._explode(self.player)
-            global SCORE
-            SCORE += 1
+            SCORE.value += 1
             self.player.kill()
 
     def _check_bullets_aliens_collision(self):
@@ -266,8 +264,7 @@ class Game:
         for alien in pg.sprite.groupcollide(self.aliens, self.shots, 1, 1).keys():
             self._play_boom_sound()
             self._explode(alien)
-            global SCORE
-            SCORE += 1
+            SCORE.value += 1
 
     def _check_rocket_aliens_collision(self):
         # See if rockets hit the aliens.
@@ -276,8 +273,7 @@ class Game:
             for alien in pg.sprite.spritecollide(self.rocket, self.aliens, 1):
                 self._play_boom_sound()
                 self._explode(alien)
-                global SCORE
-                SCORE += 1
+                SCORE.value += 1
                 rocket_collision = True
             if rocket_collision:
                 self._explode_rocket()

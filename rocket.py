@@ -2,8 +2,6 @@ import pygame as pg
 from typing import List
 
 from blast import Blast
-from explosion import Explosion
-from game_settings import SCORE
 
 
 class Rocket(pg.sprite.Sprite):
