@@ -11,6 +11,7 @@ Controls
 import os
 import pygame as pg
 import random
+import argparse
 
 from alien import Alien
 from blast import Blast
@@ -41,13 +42,13 @@ class Game:
     ########################################
     # public interfaces
     ########################################
-    def initialize(self):
+    def initialize(self, no_sound):
         # Initialize pygame
         if pg.get_sdl_version()[0] == 2:
             pg.mixer.pre_init(44100, 32, 2, 1024)
         pg.init()
 
-        self._init_sound()
+        self._init_sound(no_sound)
         self._init_display()
         self._load_images()
         self._load_sounds()
@@ -99,9 +100,11 @@ class Game:
     ########################################
     # initialization
     ########################################
-    def _init_sound(self):
-        # uncomment me if you want to debug in silence
-        # pg.mixer = None
+
+    def _init_sound(self, no_sound):
+        print(type(no_sound))
+        if no_sound:
+            pg.mixer = None
         if pg.mixer and not pg.mixer.get_init():
             print("Warning, no sound")
             pg.mixer = None
@@ -245,6 +248,7 @@ class Game:
             Alien(self.aliens, self._all, self.lastalien)
             self.alienreload = ALIEN_RELOAD
 
+
     def _alien_drop_bombs(self):
         # Drop bombs
         if self.lastalien and not int(random.random() * BOMB_ODDS):
@@ -300,8 +304,13 @@ class Game:
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Control commands:')
+    parser.add_argument('-s', action='store_true', help='Sound off')
+    args = parser.parse_args()
+    print('Sound:', args.s)
+
     game = Game()
-    game.initialize()
+    game.initialize(args.s)
     game.play()
     game.close()
 
