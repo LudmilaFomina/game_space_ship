@@ -13,7 +13,7 @@ MAX_SHOTS = 10      # maximum number of player bullets on screen
 ALIEN_ODDS = 5      # chances a new alien appears
 BOMB_ODDS = 60      # chances a new bomb will drop
 ALIEN_RELOAD = 100   # frames between new aliens
-SCREENRECT = pg.Rect(0, 0, 960, 640)
+SCREENRECT = pg.Rect(0, 0, 675, 1000)
 SCORE = ScoreValue()
 
 

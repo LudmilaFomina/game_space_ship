@@ -138,7 +138,7 @@ class Game:
         pg.mouse.set_visible(0)
 
         # create the background, tile the bgd image
-        bgdtile = load_image("fon.bmp")
+        bgdtile = load_image("fonn.jpg")
         self.background = pg.Surface(SCREENRECT.size)
         for x in range(0, SCREENRECT.width, bgdtile.get_width()):
             self.background.blit(bgdtile, (x, 0))
@@ -150,7 +150,8 @@ class Game:
         self.boom_sound = load_sound("boom.wav")
         self.shoot_sound = load_sound("car_door.wav")
         if pg.mixer:
-            music = os.path.join(MAIN_DIR, "data", "house_lo.wav")
+            music = os.path.join(MAIN_DIR, "data", "tango.mp3")
+            # Musical composition: Tango-La Cumparsita-Rodríguez-Arranged for Strings
             pg.mixer.music.load(music)
             pg.mixer.music.play(-1)
 
@@ -293,11 +294,14 @@ class Game:
 
     def _play_boom_sound(self):
         if pg.mixer and self.boom_sound is not None:
+            pg.mixer.boom_sound.set_volume(0.5)
             self.boom_sound.play()
+
 
     def _play_shoot_sound(self):
         if pg.mixer and self.shoot_sound is not None:
             self.shoot_sound.play()
+            pg.mixer.shot_sound.set_volume(0.5)
 
     def _explode(self, obj):
         Explosion(obj, self._all)

@@ -1,6 +1,6 @@
 import pygame as pg
 from typing import List
-
+from game_settings import SCREENRECT
 from explosion import Explosion
 
 
@@ -26,6 +26,6 @@ class Bomb(pg.sprite.Sprite):
         - remove the Bomb.
         """
         self.rect.move_ip(0, self.speed)
-        if self.rect.bottom >= 570:             #линия взрыва бомб
+        if self.rect.bottom >= SCREENRECT.height:
             Explosion(self, self.explosion_group)
             self.kill()

@@ -1,7 +1,6 @@
 import pygame as pg
-from typing import List
 import random
-
+from typing import List
 from game_settings import SCREENRECT
 
 
@@ -30,5 +29,5 @@ class Alien(pg.sprite.Sprite):
         self.image = self.images[self.frame // self.animcycle % 3]
         if self.frame % self.period == 0:
             self.x_vel = random.choice((-1, 1, 0))
-        if self.rect.bottom >= 640:
+        if self.rect.bottom >= SCREENRECT.height:
             self.kill()
