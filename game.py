@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 """
-Controls
+Controls:
 --------
-
-* Left and right arrows to move.
-* Space bar to shoot
-* f key to toggle between fullscreen.
+* 'Left' and 'right' arrows to move
+* 'Space bar' to shoot
+* 'n' key for rocket
+* 'm' key for rocket explosion
+* 'l' key for laser
+* 'f' key to toggle between fullscreen
 """
 
 import os
@@ -21,6 +23,7 @@ from player import Player
 from rocket import Rocket
 from score import Score
 from shot import Shot
+from laser import Laser
 from tools import load_image, load_sound
 from game_settings import MAX_SHOTS, ALIEN_ODDS, BOMB_ODDS, ALIEN_RELOAD, SCREENRECT, SCORE, MAIN_DIR
 
@@ -72,6 +75,7 @@ class Game:
             self._input_fire_bullet(keystate)
             self._input_fire_rocket(keystate)
             self._input_explode_rocket(keystate)
+            self._input_fire_laser(keystate)
 
             
             self._create_new_alien()
@@ -80,6 +84,7 @@ class Game:
             self._check_allien_player_collision()
             self._check_bullets_aliens_collision()
             self._check_rocket_aliens_collision()
+            self._check_laser_aliens_collision()
 
             self._check_bomb_player_collision()
 
@@ -130,6 +135,7 @@ class Game:
         Bomb.images = [load_image("bomb.gif")]
         Shot.images = [load_image("shot.gif")]
         Rocket.images = [load_image("rocket.gif")]
+        Laser.images = [load_image("lazer.gif")]
 
         # decorate the game window
         icon = pg.transform.scale(Alien.images[0], (32, 32))
@@ -165,6 +171,7 @@ class Game:
         self.lastalien = pg.sprite.GroupSingle()
         # instance for a rocket
         self.rocket = None
+        self.laser = None
         self.player = Player(self._all)
         Alien(
             self.aliens, self._all, self.lastalien
@@ -241,6 +248,23 @@ class Game:
         self.rocket.kill()
         blast.kill()
 
+    def _input_fire_laser(self, keystate):
+        lasering = keystate[pg.K_l]
+        if not self.player.reloading_laser and lasering and self.laser == None:
+            self.laser = Laser(self.player.gunpos(), self._all)
+            self._play_shoot_sound()
+        self.player.reloading_laser = lasering
+
+    def _explode_laser(self):
+        blast = self.laser.explode()
+        for alien in pg.sprite.spritecollide(
+                blast, self.aliens, 1):
+            self._explode(alien)
+            SCORE.value += 1
+        self._explode(blast)
+        self.laser.kill()
+        blast.kill()
+
     def _create_new_alien(self):
         # Create new alien
         if self.alienreload:
@@ -284,6 +308,17 @@ class Game:
                 self._explode_rocket()
                 self.rocket = None
 
+    def _check_laser_aliens_collision(self):
+        # See if laser hit the aliens.
+        if self.laser:
+            for alien in pg.sprite.spritecollide(self.laser, self.aliens, 1):
+                self._play_boom_sound()
+                self._explode(alien)
+                SCORE.value += 1
+            if self.laser.laser_duration_counter == Laser.laser_duration:
+                self.laser.kill()
+                self.laser = None
+
     def _check_bomb_player_collision(self):
         # See if alien bombs hit the player.
         for bomb in pg.sprite.spritecollide(self.player, self.bombs, 1):
@@ -294,14 +329,14 @@ class Game:
 
     def _play_boom_sound(self):
         if pg.mixer and self.boom_sound is not None:
-            pg.mixer.boom_sound.set_volume(0.5)
+            #pg.mixer.boom_sound.set_volume(0.5)
             self.boom_sound.play()
 
 
     def _play_shoot_sound(self):
         if pg.mixer and self.shoot_sound is not None:
             self.shoot_sound.play()
-            pg.mixer.shot_sound.set_volume(0.5)
+            #pg.mixer.shot_sound.set_volume(0.5)
 
     def _explode(self, obj):
         Explosion(obj, self._all)

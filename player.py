@@ -18,6 +18,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
         self.reloading = False
         self.reloading_rocket = False
+        self.reloading_laser = False
         self.origtop = self.rect.top
         self.facing = -1
 
