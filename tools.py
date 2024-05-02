@@ -1,6 +1,5 @@
 import os
 import pygame as pg
-
 from game_settings import MAIN_DIR
 
 

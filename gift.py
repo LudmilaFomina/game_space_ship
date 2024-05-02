@@ -4,8 +4,10 @@ from typing import List
 from game_settings import SCREENRECT
 
 
-class Alien(pg.sprite.Sprite):
-    """An alien spaceship. That slowly moves down the screen"""
+class Gift(pg.sprite.Sprite):
+    """The gift appears in a random place at the top of the screen
+    and gives +10 points to the player
+    when it comes into contact with a spaceship"""
 
     animcycle = 12
     period = 70
@@ -16,7 +18,7 @@ class Alien(pg.sprite.Sprite):
         self.image = self.images[0]
         self.rect = self.image.get_rect()
         self.x_vel = random.choice((-1, 1, 0))
-        self.y_vel = 1
+        self.y_vel = 2
         self.frame = 0
         self.rect.right = random.uniform(111, SCREENRECT.right)
 
@@ -28,6 +30,6 @@ class Alien(pg.sprite.Sprite):
         self.frame = self.frame + 1
         self.image = self.images[self.frame // self.animcycle % 3]
         if self.frame % self.period == 0:
-            self.x_vel = random.choice((-1, 1, 0))
+            self.x_vel = 0
         if self.rect.bottom >= SCREENRECT.height:
             self.kill()

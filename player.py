@@ -1,6 +1,5 @@
 import pygame as pg
 from typing import List
-
 from game_settings import SCREENRECT
 
 

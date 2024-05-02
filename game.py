@@ -2,12 +2,12 @@
 """
 Controls:
 --------
-* 'Left' and 'right' arrows to move
-* 'Space bar' to shoot
-* 'n' key for rocket
-* 'm' key for rocket explosion
-* 'l' key for laser
-* 'f' key to toggle between fullscreen
+'Left' and 'right' arrows to move
+'Space bar' to shoot
+'n' key for rocket
+'m' key for rocket explosion
+'l' key for laser
+'f' key to toggle between fullscreen
 """
 
 import os
@@ -24,8 +24,10 @@ from rocket import Rocket
 from score import Score
 from shot import Shot
 from laser import Laser
+from gift import Gift
 from tools import load_image, load_sound
-from game_settings import MAX_SHOTS, ALIEN_ODDS, BOMB_ODDS, ALIEN_RELOAD, SCREENRECT, SCORE, MAIN_DIR
+from game_settings import (MAX_SHOTS, ALIEN_ODDS, BOMB_ODDS, GIFT_ODDS, ALIEN_RELOAD,
+                           GIFT_RELOAD, SCREENRECT, SCORE, MAIN_DIR)
 
 
 # see if we can load more than standard BMP
@@ -41,6 +43,7 @@ class Game:
         self.screen = None
         self.bestdepth = None
         self.alienreload = ALIEN_RELOAD
+        self.giftreload = GIFT_RELOAD
 
     ########################################
     # public interfaces
@@ -77,16 +80,17 @@ class Game:
             self._input_explode_rocket(keystate)
             self._input_fire_laser(keystate)
 
-            
             self._create_new_alien()
             self._alien_drop_bombs()
+            self._create_new_gift()
 
-            self._check_allien_player_collision()
+            self._check_alien_player_collision()
+            self._check_bomb_player_collision()
+            self._check_gift_player_collision()
+
             self._check_bullets_aliens_collision()
             self._check_rocket_aliens_collision()
             self._check_laser_aliens_collision()
-
-            self._check_bomb_player_collision()
 
             # draw the scene
             dirty = self._all.draw(self.screen)
@@ -107,7 +111,6 @@ class Game:
     ########################################
 
     def _init_sound(self, no_sound):
-        print(type(no_sound))
         if no_sound:
             pg.mixer = None
         if pg.mixer and not pg.mixer.get_init():
@@ -126,7 +129,6 @@ class Game:
 
     def _load_images(self):
         # Load images, assign to sprite classes
-        # (do this before the classes are used, after screen setup)
         img = load_image('spaceship.gif')
         Player.images = [img, pg.transform.flip(img, 1, 0)]
         img = load_image("explo.gif")
@@ -136,6 +138,7 @@ class Game:
         Shot.images = [load_image("shot.gif")]
         Rocket.images = [load_image("rocket.gif")]
         Laser.images = [load_image("lazer.gif")]
+        Gift.images = [load_image(im) for im in ("cow1.gif", "cow2.gif", "cow3.gif")]
 
         # decorate the game window
         icon = pg.transform.scale(Alien.images[0], (32, 32))
@@ -161,15 +164,15 @@ class Game:
             pg.mixer.music.load(music)
             pg.mixer.music.play(-1)
 
-
     def _init_groups(self):
         # Initialize Game Groups
         self.aliens = pg.sprite.Group()
         self.shots = pg.sprite.Group()
         self.bombs = pg.sprite.Group()
+        self.gifts = pg.sprite.Group()
         self._all = pg.sprite.RenderUpdates()
         self.lastalien = pg.sprite.GroupSingle()
-        # instance for a rocket
+        # instance for a rocket and laser
         self.rocket = None
         self.laser = None
         self.player = Player(self._all)
@@ -273,13 +276,20 @@ class Game:
             Alien(self.aliens, self._all, self.lastalien)
             self.alienreload = ALIEN_RELOAD
 
-
     def _alien_drop_bombs(self):
         # Drop bombs
         if self.lastalien and not int(random.random() * BOMB_ODDS):
             Bomb(self.lastalien.sprite, self._all, self.bombs, self._all)
 
-    def _check_allien_player_collision(self):
+    def _create_new_gift(self):
+        if self.giftreload != 0:
+            self.giftreload = self.giftreload - 1
+        else:
+            if random.random() <= GIFT_ODDS:
+                Gift(self.gifts, self._all)
+                self.giftreload = GIFT_RELOAD
+
+    def _check_alien_player_collision(self):
         # Detect collisions between aliens and players.
         for alien in pg.sprite.spritecollide(self.player, self.aliens, 1):
             self._play_boom_sound()
@@ -326,6 +336,12 @@ class Game:
             self._explode(self.player)
             self._explode(bomb)
             self.player.kill()
+
+    def _check_gift_player_collision(self):
+        # Detect collisions between gift and player
+        for gift in pg.sprite.spritecollide(self.player, self.gifts, 1):
+            #self._play_boom_sound()
+            SCORE.value += 10
 
     def _play_boom_sound(self):
         if pg.mixer and self.boom_sound is not None:

@@ -4,7 +4,7 @@ from blast import Blast
 
 
 class Laser(pg.sprite.Sprite):
-    """a laser the Player sprite fires."""
+    """A laser the Player sprite fires"""
     laser_duration = 40
     images: List[pg.Surface] = []
 
@@ -18,7 +18,7 @@ class Laser(pg.sprite.Sprite):
         return Blast(self.rect.center, self.groups())
 
     def update(self):
-        """called every time around the game loop.
-        Every tick we move the laser upwards.
+        """Called every time around the game loop.
+        Every tick we move the laser upwards
         """
         self.laser_duration_counter += 1

@@ -1,6 +1,5 @@
 import pygame as pg
 from typing import List
-
 from blast import Blast
 
 

@@ -3,8 +3,7 @@ from typing import List
 
 
 class Explosion(pg.sprite.Sprite):
-    """An explosion. Hopefully the Alien and not the player!"""
-
+    """Alien's explosion"""
     defaultlife = 12
     animcycle = 3
     orig_images: List[pg.Surface] = []
@@ -29,12 +28,10 @@ class Explosion(pg.sprite.Sprite):
         return imgs
 
     def update(self):
-        """called every time around the game loop.
-
-        Show the explosion surface for 'default life'.
+        """Called every time around the game loop.
+        Shows the explosion surface for 'default life'.
         Every game tick(update), we decrease the 'life'.
-
-        Also we animate the explosion.
+        Also we animate the explosion
         """
         self.life = self.life - 1
         self.image = self.images[self.life // self.animcycle % 2]

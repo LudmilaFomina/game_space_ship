@@ -5,8 +5,7 @@ from explosion import Explosion
 
 
 class Bomb(pg.sprite.Sprite):
-    """A bomb the aliens drop."""
-
+    """A bomb the aliens drop"""
     speed = 4
     images: List[pg.Surface] = []
 
@@ -17,13 +16,11 @@ class Bomb(pg.sprite.Sprite):
         self.explosion_group = explosion_group
 
     def update(self):
-        """called every time around the game loop.
-
+        """Called every time around the game loop.
         Every frame we move the sprite 'rect' down.
         When it reaches the bottom we:
-
-        - make an explosion.
-        - remove the Bomb.
+        - make an explosion
+        - remove the Bomb
         """
         self.rect.move_ip(0, self.speed)
         if self.rect.bottom >= SCREENRECT.height:
