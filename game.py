@@ -158,11 +158,16 @@ class Game:
         # load the sound effects
         self.boom_sound = load_sound("boom.wav")
         self.shoot_sound = load_sound("car_door.wav")
+        self.rocket_sound = load_sound("rocket.mp3")
+        self.laser_sound = load_sound("laser.mp3")
+        self.gift_sound = load_sound("moo.mp3")
         if pg.mixer:
             music = os.path.join(MAIN_DIR, "data", "tango.mp3")
             # Musical composition: Tango-La Cumparsita-Rodríguez-Arranged for Strings
             pg.mixer.music.load(music)
             pg.mixer.music.play(-1)
+            self.boom_sound.set_volume(0.5)
+            self.laser_sound.set_volume(0.4)
 
     def _init_groups(self):
         # Initialize Game Groups
@@ -232,7 +237,7 @@ class Game:
         rocketing = keystate[pg.K_n]
         if not self.player.reloading_rocket and rocketing and self.rocket == None:
             self.rocket = Rocket(self.player.gunpos(), self._all)
-            self._play_shoot_sound()
+            self._play_rocket_sound()
         self.player.reloading_rocket = rocketing
 
     def _input_explode_rocket(self, keystate):
@@ -255,7 +260,7 @@ class Game:
         lasering = keystate[pg.K_l]
         if not self.player.reloading_laser and lasering and self.laser == None:
             self.laser = Laser(self.player.gunpos(), self._all)
-            self._play_shoot_sound()
+            self._play_laser_sound()
         self.player.reloading_laser = lasering
 
     def _explode_laser(self):
@@ -342,17 +347,27 @@ class Game:
         for gift in pg.sprite.spritecollide(self.player, self.gifts, 1):
             #self._play_boom_sound()
             SCORE.value += 10
+            self._play_gift_sound()
 
     def _play_boom_sound(self):
         if pg.mixer and self.boom_sound is not None:
-            #pg.mixer.boom_sound.set_volume(0.5)
             self.boom_sound.play()
-
 
     def _play_shoot_sound(self):
         if pg.mixer and self.shoot_sound is not None:
             self.shoot_sound.play()
-            #pg.mixer.shot_sound.set_volume(0.5)
+
+    def _play_rocket_sound(self):
+        if pg.mixer and self.rocket_sound is not None:
+            self.rocket_sound.play()
+
+    def _play_laser_sound(self):
+        if pg.mixer and self.laser_sound is not None:
+            self.laser_sound.play()
+
+    def _play_gift_sound(self):
+        if pg.mixer and self.gift_sound is not None:
+            self.gift_sound.play()
 
     def _explode(self, obj):
         Explosion(obj, self._all)
